@@ -617,18 +617,22 @@ const app = express();
 app.use("/", router);
 app.use(express.static(path.join(__dirname, "public")));
 
+const PLAYER_ORIGIN = "https://www.ken-py-dev.gleeze.com";
+
 router.get("/player", async (req, res) => {
   try {
     const qs = new URLSearchParams(req.query).toString();
-    const dest = `https://www.ken-py-dev.gleeze.com/player?${qs}`;
+    const dest = `${PLAYER_ORIGIN}/projects/aniseki/player.html?${qs}`;
     const response = await axios.get(dest, { responseType: "text", validateStatus: s => s < 400 });
-      return res.send(response.data);
+    let html = response.data.replace(/window\.location\.origin/g, `'${PLAYER_ORIGIN}'`);
+    return res.send(html);
   } catch {
     try {
       const qs = new URLSearchParams(req.query).toString();
-      const fallbackDest = `https://allanime.day/player?${qs}`;
+      const fallbackDest = `https://allanime.day/projects/aniseki/player.html?${qs}`;
       const response = await axios.get(fallbackDest, { responseType: "text", validateStatus: s => s < 400 });
-    return res.send(response.data);
+      let html = response.data.replace(/window\.location\.origin/g, `'${PLAYER_ORIGIN}'`);
+      return res.send(html);
     } catch {}
     res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
   }
