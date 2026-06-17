@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AniseKai — API Docs</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a2e;
+    --card: #16213e;
+    --accent: #e94560;
+    --text: #e8e8e8;
+    --text2: #8899aa;
+    --text3: #556677;
+    --border: #2a2a3e;
+    --success: #4ade80;
+    --error: #ef4444;
+    --gradient: linear-gradient(135deg, #e94560, #0f3460);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; position: sticky;
+    top: 0; z-index: 100; backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-size: 1.3rem; font-weight: 800; background: var(--gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo i { font-size: 1.1rem; }
+  .logo span { font-size: 0.7rem; color: var(--text3); font-weight: 400; -webkit-text-fill-color: var(--text3); background: none; }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    color: var(--text2); text-decoration: none; font-size: 0.82rem;
+    padding: 7px 12px; border-radius: 8px; transition: all 0.2s; font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .nav-links a:hover { background: var(--bg3); color: var(--text); }
+  .nav-links a.active { background: var(--accent); color: #fff; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
+  h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+  .subtitle { color: var(--text2); margin-bottom: 28px; font-size: 0.9rem; line-height: 1.6; }
+  .subtitle code { color: var(--accent); font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+
+  .endpoint-list { display: flex; flex-direction: column; gap: 14px; }
+  .endpoint-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; transition: border-color 0.2s;
+  }
+  .endpoint-card:hover { border-color: rgba(15,52,96,0.6); }
+  .endpoint-card.open { border-color: var(--accent); }
+
+  .endpoint-header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    cursor: pointer; user-select: none;
+  }
+  .endpoint-header:hover { background: rgba(255,255,255,0.02); }
+  .method {
+    font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 5px;
+    letter-spacing: 0.5px; flex-shrink: 0; background: rgba(59,130,246,0.15); color: #60a5fa;
+  }
+  .endpoint-path {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--text); flex: 1;
+  }
+  .endpoint-desc { font-size: 0.78rem; color: var(--text2); }
+  .fa-chevron-down { transition: transform 0.2s; color: var(--text3); font-size: 0.75rem; }
+  .endpoint-card.open .fa-chevron-down { transform: rotate(180deg); }
+
+  .endpoint-body {
+    display: none; padding: 0 18px 18px; border-top: 1px solid var(--border);
+  }
+  .endpoint-card.open .endpoint-body { display: block; }
+
+  .params-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.82rem; }
+  .params-table th {
+    text-align: left; color: var(--text2); font-weight: 600; padding: 6px 10px;
+    border-bottom: 1px solid var(--border); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .params-table td { padding: 6px 10px; border-bottom: 1px solid rgba(42,42,62,0.5); }
+  .params-table tr:last-child td { border-bottom: none; }
+  .param-name { font-family: 'JetBrains Mono', monospace; color: #fbbf24; font-size: 0.78rem; }
+  .param-required { color: var(--accent); font-size: 0.68rem; font-weight: 600; }
+  .param-optional { color: var(--text3); font-size: 0.68rem; }
+  .param-type { color: var(--text3); font-size: 0.72rem; }
+
+  .test-form {
+    margin-top: 10px; padding: 12px; background: var(--bg2); border-radius: 10px;
+  }
+  .test-form .field {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .test-form .field:last-of-type { margin-bottom: 10px; }
+  .test-form label { font-size: 0.78rem; color: var(--text2); font-weight: 500; flex-shrink: 0; width: 50px; }
+  .test-form input {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 7px 10px; border-radius: 8px; font-size: 0.82rem; flex: 1; min-width: 0;
+    font-family: 'JetBrains Mono', monospace; outline: none; transition: border-color 0.2s;
+  }
+  .test-form input:focus { border-color: var(--accent); }
+  .test-form .btn-wrap { text-align: center; }
+  .test-form button {
+    background: var(--accent); color: #fff; border: none; padding: 7px 16px;
+    border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.82rem;
+    font-family: inherit; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    width: 100%;
+  }
+  .test-form button:hover { background: #d63850; transform: translateY(-1px); }
+  .test-form button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .response-area { margin-top: 8px; display: none; }
+  .response-area.visible { display: block; }
+  .response-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.78rem; }
+  .response-status { font-weight: 700; padding: 2px 8px; border-radius: 5px; }
+  .response-status.success { background: rgba(74,222,128,0.15); color: var(--success); }
+  .response-status.error { background: rgba(239,68,68,0.15); color: var(--error); }
+  .response-time { color: var(--text3); }
+  .response-url { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text3); word-break: break-all; }
+
+    .media-preview { margin-top: 10px; border-radius: 10px; overflow: hidden; background: #000; }
+  .media-preview img { width: 100%; display: block; max-height: 400px; object-fit: contain; }
+  .media-preview video { width: 100%; display: block; max-height: 400px; }
+
+pre {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px; overflow-x: auto; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; line-height: 1.5; max-height: 400px; overflow-y: auto; color: var(--text);
+  }
+  pre .string { color: #4ade80; }
+  pre .number { color: #60a5fa; }
+  pre .boolean { color: #fbbf24; }
+  pre .null { color: var(--text3); }
+  pre .key { color: #e879f9; }
+  pre .bracket { color: var(--text2); }
+
+  .status-badge { display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-left: 10px; }
+  .status-badge.up { background: rgba(74,222,128,0.15); color: var(--success); }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .container { padding: 16px 12px; }
+    h1 { font-size: 1.3rem; }
+    header { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
+    .logo { font-size: 1.1rem; }
+    .nav-links a { font-size: 0.75rem; padding: 5px 8px; }
+    .endpoint-header { flex-wrap: wrap; padding: 10px 12px; gap: 4px; }
+    .endpoint-path { font-size: 0.72rem; word-break: break-all; }
+    .test-form .field { flex-direction: column; align-items: stretch; gap: 4px; }
+    .test-form label { width: auto; }
+    .test-form button { justify-content: center; }
+    pre { font-size: 0.68rem; padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><i class="fas fa-book"></i> AniseKai <span>/ docs</span></div>
+  <nav class="nav-links">
+    <a href="{{BASE_PATH}}/"><i class="fas fa-tv"></i> Demo</a>
+    <a href="{{BASE_PATH}}/docs" class="active"><i class="fas fa-book"></i> Docs</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h1><i class="fas fa-code" style="color:var(--accent);margin-right:10px;"></i> API Reference</h1>
+  <p class="subtitle">
+    All endpoints return JSON. Click an endpoint to expand and test it live.<br>
+    Base URL: <code id="baseUrlDisplay">{{API_BASE}}</code>
+    <span id="healthStatus"></span>
+  </p>
+  <div class="endpoint-list" id="endpointList"></div>
+</div>
+
+<script>
+const BASE = '{{API_BASE}}';
+window.API_BASE = BASE;
+document.getElementById('baseUrlDisplay').textContent = BASE;
+
+const endpoints = [
+  {
+    path: '/',
+    desc: 'Home page — featured, latest episodes, upcoming, new releases, top anime.',
+    params: [],
+  },
+  {
+    path: '/info',
+    desc: 'Detailed anime info: title, synopsis, genres, metadata, episode count.',
+    params: [
+      { name: 'id', type: 'string', required: true, desc: 'Anime slug', example: 'reborn-as-a-cat-cnbc3' },
+    ],
+  },
+  {
+    path: '/listing',
+    desc: 'Listing page (new-release, latest-updated, most-viewed, etc).',
+    params: [
+      { name: 'type', type: 'string', required: true, desc: 'Page type', example: 'new-release' },
+    ],
+  },
+  {
+    path: '/search',
+    desc: 'Search anime by keyword.',
+    params: [
+      { name: 'q', type: 'string', required: true, desc: 'Search keyword', example: 'dandadan' },
+    ],
+  },
+  {
+    path: '/episodes',
+    desc: 'Episode list with SUB/DUB flags.',
+    params: [
+      { name: 'id', type: 'string', required: true, desc: 'Anime slug', example: 'reborn-as-a-cat-cnbc3' },
+    ],
+  },
+  {
+    path: '/stream',
+    desc: 'Resolve stream — returns all servers with resolved URLs, HLS m3u8, subtitles, and proxyUrl.',
+    params: [
+      { name: 'id', type: 'string', required: true, desc: 'Anime slug', example: 'dandadan-lzcmw' },
+      { name: 'ep', type: 'number', required: true, desc: 'Episode number', example: '1' },
+    ],
+  },
+  {
+    path: '/hls-proxy',
+    desc: 'Proxy HLS streams — rewrites m3u8 playlist URLs to route through this server.',
+    params: [
+      { name: 'url', type: 'string', required: true, desc: 'm3u8 / segment / VTT URL', example: 'https://s1.streamzone1.site/anime/fce1eab4411d5df240d93ff334f15385/6a487b32fb78e702ac34a5281663fd85/master.m3u8' },
+    ],
+  },
+  {
+    path: '/image-proxy',
+    desc: 'Proxy images with proper referer headers for CDNs (tmdb, anilist, allanime, etc).',
+    params: [
+      { name: 'url', type: 'string', required: true, desc: 'Image URL to proxy', example: 'https://cdn.anipixcdn.co/background/cadda32132bc1213_1778862491.jpg' },
+    ],
+  },
+  {
+    path: '/schedule',
+    desc: 'Anime broadcast schedule, optionally filtered by date.',
+    params: [
+      { name: 'date', type: 'string', required: false, desc: 'Date (YYYY-MM-DD)', example: '2026-06-04' },
+    ],
+  },
+  {
+    path: '/health',
+    desc: 'Health check — service status and uptime and speed.',
+    params: [],
+  },
+];
+
+function renderEndpoints() {
+  const list = document.getElementById('endpointList');
+  list.innerHTML = endpoints.map((ep, i) => `
+    <div class="endpoint-card" id="ep-${i}">
+      <div class="endpoint-header" onclick="toggleEndpoint(${i})">
+        <span class="method">GET</span>
+        <span class="endpoint-path">${BASE}${ep.path}</span>
+        <span class="endpoint-desc">${ep.desc}</span>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <div class="endpoint-body">
+        ${ep.params.length ? `
+          <table class="params-table">
+            <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              ${ep.params.map(p => `
+                <tr>
+                  <td><span class="param-name">${p.name}</span></td>
+                  <td><span class="param-type">${p.type}</span></td>
+                  <td>${p.required ? '<span class="param-required">Required</span>' : '<span class="param-optional">Optional</span>'}</td>
+                  <td style="color:var(--text2);font-size:0.78rem;">${p.desc}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        ` : '<p style="color:var(--text2);font-size:0.82rem;margin:6px 0;">No parameters.</p>'}
+
+        <div class="test-form" id="form-${i}">
+          ${ep.params.map(p => `
+            <div class="field">
+              <label>${p.name}:</label>
+              <input type="text" id="input-${i}-${p.name}" placeholder="${p.desc}" value="${p.example || ''}">
+            </div>
+          `).join('')}
+          <div class="btn-wrap"><button onclick="testEndpoint(${i})"><i class="fas fa-play"></i> Send</button></div>
+        </div>
+
+        <div class="response-area" id="response-${i}">
+          <div class="response-meta">
+            <span class="response-status" id="status-${i}"></span>
+            <span class="response-time" id="time-${i}"></span>
+            <span class="response-url" id="url-${i}"></span>
+          </div>
+          <pre id="output-${i}"></pre>
+          <div class="media-preview" id="preview-${i}"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleEndpoint(i) {
+  document.getElementById(`ep-${i}`).classList.toggle('open');
+}
+
+async function testEndpoint(i) {
+  const ep = endpoints[i];
+  const btn = document.querySelector(`#form-${i} button`);
+  const respArea = document.getElementById(`response-${i}`);
+  const output = document.getElementById(`output-${i}`);
+  const statusEl = document.getElementById(`status-${i}`);
+  const timeEl = document.getElementById(`time-${i}`);
+  const urlEl = document.getElementById(`url-${i}`);
+  const preview = document.getElementById(`preview-${i}`);
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+  const queryParts = [];
+  for (const p of ep.params) {
+    const input = document.getElementById(`input-${i}-${p.name}`);
+    const val = input ? input.value.trim() : '';
+    if (val) queryParts.push(`${encodeURIComponent(p.name)}=${encodeURIComponent(val)}`);
+  }
+  const qs = queryParts.length ? '?' + queryParts.join('&') : '';
+  const fullUrl = `${BASE}${ep.path}${qs}`;
+
+  const start = performance.now();
+  try {
+    const res = await fetch(fullUrl);
+    const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+
+    statusEl.textContent = `${res.status} ${res.ok ? 'OK' : 'Error'}`;
+    statusEl.className = `response-status ${res.ok ? 'success' : 'error'}`;
+    timeEl.textContent = `${elapsed}s`;
+    urlEl.textContent = fullUrl;
+    respArea.classList.add('visible');
+    preview.innerHTML = '';
+
+    if (i === 7 && res.ok) {
+      const blob = await res.blob();
+      if (blob.type.startsWith('image/')) {
+        const imgUrl = URL.createObjectURL(blob);
+        preview.innerHTML = `<img src="${imgUrl}" alt="Image proxy result">`;
+        output.innerHTML = `<span class="key">"contentType"</span>: <span class="string">"${blob.type}"</span>\n<span class="key">"size"</span>: <span class="number">${blob.size}</span>`;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play"></i> Send';
+        return;
+      }
+    }
+
+    if (i === 6 && res.ok) {
+      const text = await res.text();
+      output.innerHTML = escapeHtml(text);
+      const video = document.createElement('video');
+      video.controls = true;
+      video.muted = true;
+      preview.appendChild(video);
+      const qWrap = document.createElement('div');
+      qWrap.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg2);font-size:0.78rem;color:var(--text2);';
+      qWrap.innerHTML = '<span>Quality:</span>';
+      const qSel = document.createElement('select');
+      qSel.style.cssText = 'background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:0.78rem;font-family:inherit;flex:1;';
+      qSel.innerHTML = '<option value="-1">Auto</option>';
+      qWrap.appendChild(qSel);
+      preview.appendChild(qWrap);
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(fullUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          const levels = hls.levels;
+          levels.forEach((l, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            const h = l.height || '?';
+            const bitrate = l.bitrate ? (l.bitrate / 1000).toFixed(0) + 'k' : '';
+            opt.textContent = h + 'p' + (bitrate ? ' (' + bitrate + ')' : '');
+            qSel.appendChild(opt);
+          });
+          video.play().catch(() => {});
+        });
+        qSel.addEventListener('change', () => {
+          const val = parseInt(qSel.value);
+          hls.currentLevel = isNaN(val) ? -1 : val;
+        });
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = fullUrl;
+        qWrap.style.display = 'none';
+        video.play().catch(() => {});
+      }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-play"></i> Send';
+      return;
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    let text;
+    if (contentType.includes('application/json')) {
+      text = await res.text();
+    } else {
+      text = await res.text();
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      text = syntaxHighlight(JSON.stringify(parsed, null, 2));
+    } catch {
+      text = escapeHtml(text);
+    }
+
+    output.innerHTML = text;
+  } catch (e) {
+    const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+    output.textContent = `Fetch Error: ${e.message}`;
+    statusEl.textContent = 'Failed';
+    statusEl.className = 'response-status error';
+    timeEl.textContent = `${elapsed}s`;
+    urlEl.textContent = fullUrl;
+    respArea.classList.add('visible');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-play"></i> Send';
+}
+
+function syntaxHighlight(json) {
+  return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+    .replace(/: "([^"]+)"/g, ': <span class="string">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="boolean">$1</span>')
+    .replace(/: (null)/g, ': <span class="null">$1</span>')
+    .replace(/([\[\]{}])/g, '<span class="bracket">$1</span>');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+async function checkHealth() {
+  const statusEl = document.getElementById('healthStatus');
+  try {
+    const res = await fetch(`${BASE}/health`);
+    const data = await res.json();
+    if (data.status === 'ok') {
+      statusEl.innerHTML = '<span class="status-badge up"><i class="fas fa-check-circle"></i> Online</span>';
+    }
+  } catch {
+    statusEl.innerHTML = '<span class="status-badge" style="background:rgba(239,68,68,0.15);color:var(--error);"><i class="fas fa-exclamation-circle"></i> Offline</span>';
+  }
+}
+
+renderEndpoints();
+toggleEndpoint(0);
+toggleEndpoint(1);
+toggleEndpoint(5);
+toggleEndpoint(6);
+toggleEndpoint(7);
+checkHealth();
+</script>
+</body>
+</html>

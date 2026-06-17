@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AniseKai Stream</title>
+<meta name="theme-color" content="#0a0a0f">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="app.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a2e;
+    --card: #16213e;
+    --card-hover: #1f2f50;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --text: #e8e8e8;
+    --text2: #8899aa;
+    --border: #2a2a3e;
+    --gradient: linear-gradient(135deg, #e94560, #0f3460);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .logo i { -webkit-text-fill-color: var(--accent); }
+  .logo .logo-sub { font-size: 0.65rem; -webkit-text-fill-color: var(--text2); background: none; font-weight: 500; }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 14px;
+    width: 300px;
+    flex: 0 1 300px;
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-bar:focus-within { border-color: var(--accent); box-shadow: 0 0 20px rgba(233,69,96,0.12); }
+  .search-bar input { background: none; border: none; outline: none; color: var(--text); font-size: 0.88rem; width: 100%; font-family: inherit; min-width: 0; }
+  .search-bar input::placeholder { color: var(--text2); opacity: 0.7; }
+  .search-bar button { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 0.95rem; padding: 2px; flex-shrink: 0; transition: color 0.2s; }
+  .search-bar button:hover { color: var(--accent); }
+
+  .nav-links { display: flex; gap: 4px; flex-shrink: 0; }
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.82rem;
+    padding: 7px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-weight: 500;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 36px;
+  }
+  .nav-links a:active { transform: scale(0.96); }
+  .nav-links a:hover { background: var(--bg3); color: var(--text); }
+  .nav-links a.active { background: var(--accent); color: #fff; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; min-height: 60vh; }
+  .section { margin-bottom: 32px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .section-header h2 { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .section-header h2 i { color: var(--accent); }
+  .section-header .count { font-size: 0.75rem; color: var(--text2); background: var(--bg3); padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+
+  .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .featured-card {
+    position: relative; border-radius: 14px; overflow: hidden; height: 240px;
+    background: var(--bg3); cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent;
+  }
+  .featured-card:active { transform: scale(0.98); }
+  .featured-card .bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.4s; }
+  .featured-card .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); }
+  .featured-card .content { position: absolute; bottom: 0; left: 0; right: 0; padding: 18px; }
+  .featured-card .content h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .featured-card .meta-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .featured-card .meta-tags span { font-size: 0.65rem; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.1); color: var(--text2); }
+  .featured-card .meta-tags .rating { color: #ffd700; }
+  .featured-card .meta-tags .hd { color: #4ade80; }
+  .featured-card .synopsis-text { font-size: 0.75rem; color: var(--text2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .anime-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .anime-card { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; -webkit-tap-highlight-color: transparent; }
+  .anime-card:active { transform: scale(0.97); }
+  .anime-card .poster-wrap { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--bg3); }
+  .anime-card .poster-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .anime-card .poster-wrap .ep-badge { position: absolute; top: 6px; right: 6px; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+  .anime-card .poster-wrap .type-badge { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.75); color: var(--text2); font-size: 0.6rem; padding: 2px 7px; border-radius: 4px; backdrop-filter: blur(4px); }
+  .anime-card .card-info { padding: 10px; }
+  .anime-card .card-info h4 { font-size: 0.82rem; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .anime-card .card-info .ep-info { font-size: 0.7rem; color: var(--text2); display: flex; gap: 8px; }
+  .anime-card .card-info .ep-info .sub { color: #60a5fa; }
+  .anime-card .card-info .ep-info .dub { color: #fbbf24; }
+
+  .table-items { display: flex; flex-direction: column; gap: 6px; }
+  .table-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--card); border-radius: 8px; transition: all 0.2s; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .table-item:active { transform: scale(0.98); background: var(--card-hover); }
+  .table-item .rank { font-size: 1.1rem; font-weight: 800; color: var(--text2); width: 28px; text-align: center; flex-shrink: 0; }
+  .table-item .thumb { width: 42px; height: 42px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: var(--bg3); }
+  .table-item .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .table-item .info { flex: 1; min-width: 0; }
+  .table-item .info .title { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .table-item .info .subinfo { font-size: 0.7rem; color: var(--text2); display: flex; gap: 8px; margin-top: 2px; }
+  .table-item .status { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; font-weight: 600; flex-shrink: 0; }
+  .table-item .status.ep { background: rgba(233,69,96,0.15); color: var(--accent); }
+
+  .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+  .two-col .main-col { min-width: 0; }
+  .two-col .side-col { min-width: 0; }
+
+  #app { position: relative; }
+  #loading {
+    position: absolute; inset: 0; display: none; justify-content: center; align-items: center;
+    flex-direction: column; gap: 16px; background: rgba(10,10,15,0.7); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); z-index: 50; min-height: 300px; border-radius: 12px;
+  }
+  #loading .spinner { width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading p { color: var(--text2); font-size: 0.88rem; }
+
+  .error-state { text-align: center; padding: 60px 20px; }
+  .error-state i { font-size: 2.5rem; color: var(--accent); margin-bottom: 14px; }
+  .error-state h3 { margin-bottom: 6px; font-size: 1.1rem; }
+  .error-state p { color: var(--text2); margin-bottom: 18px; font-size: 0.88rem; }
+  .error-state button { background: var(--accent); color: #fff; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: inherit; min-height: 42px; font-size: 0.9rem; transition: all 0.2s; }
+  .error-state button:hover { background: #d63850; }
+
+  .tabs { display: flex; gap: 3px; margin-bottom: 14px; background: var(--bg3); border-radius: 10px; padding: 3px; }
+  .tabs button { flex: 1; background: none; border: none; color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; font-family: inherit; transition: all 0.2s; min-height: 36px; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .tabs button.active { background: var(--accent); color: #fff; }
+  .tabs button:active:not(.active) { background: rgba(255,255,255,0.05); }
+
+  .sidebar-items { display: flex; flex-direction: column; gap: 6px; }
+  .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--card); border-radius: 8px; transition: all 0.2s; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .sidebar-item:active { background: var(--card-hover); }
+  .sidebar-item .rank-num { font-size: 0.9rem; font-weight: 800; color: var(--accent); width: 22px; text-align: center; flex-shrink: 0; }
+  .sidebar-item .thumb { width: 34px; height: 34px; border-radius: 5px; overflow: hidden; flex-shrink: 0; background: var(--bg3); }
+  .sidebar-item .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .sidebar-item .info { flex: 1; min-width: 0; }
+  .sidebar-item .info .name { font-size: 0.78rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-item .info .meta { font-size: 0.65rem; color: var(--text2); display: flex; gap: 6px; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg2); border-radius: 20px 20px 0 0; max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto; overscroll-behavior: contain; padding: 24px 20px; padding-bottom: calc(24px + var(--safe-bottom)); border: 1px solid var(--border); border-bottom: none; animation: modalIn 0.3s ease; }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close { float: right; background: var(--bg3); border: none; color: var(--text2); font-size: 1.3rem; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { background: var(--accent); color: #fff; }
+  .modal h2 { margin-bottom: 6px; font-size: 1.2rem; padding-right: 40px; line-height: 1.3; }
+  .modal .modal-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .modal .modal-meta span { font-size: 0.7rem; padding: 3px 10px; border-radius: 5px; background: var(--bg3); color: var(--text2); }
+  .modal .modal-poster { width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; margin-bottom: 14px; }
+  .modal p { color: var(--text2); line-height: 1.6; font-size: 0.85rem; }
+  .modal a.watch-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; background: var(--accent); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 0.88rem; min-height: 42px; transition: all 0.2s; }
+  .modal a.watch-link:hover { background: #d63850; }
+
+  .watch-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.88rem; font-family: inherit; transition: all 0.2s; margin-top: 12px; min-height: 42px; }
+  .watch-btn:hover { background: #d63850; }
+
+  .episode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; margin-top: 8px; }
+  .episode-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px; background: var(--card); border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; min-height: 52px; justify-content: center; }
+  a.episode-item { text-decoration: none; color: inherit; }
+  a.episode-item:active { transform: scale(0.95); border-color: var(--accent); }
+  .episode-item .ep-num { font-weight: 700; font-size: 0.8rem; }
+  .episode-item .ep-badges { display: flex; gap: 3px; }
+  .episode-item .ep-badges span { font-size: 0.55rem; padding: 1px 5px; border-radius: 3px; font-weight: 700; }
+  .badge-sub { background: rgba(59,130,246,0.2); color: #60a5fa; }
+  .badge-dub { background: rgba(251,191,36,0.2); color: #fbbf24; }
+
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+  .pagination button { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; font-family: inherit; transition: all 0.2s; min-height: 38px; min-width: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+  .pagination button:active { transform: scale(0.96); }
+  .pagination button:hover:not(:disabled) { border-color: var(--accent); background: var(--card-hover); }
+  .pagination button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pagination .page-info { font-size: 0.78rem; color: var(--text2); padding: 0 6px; }
+
+  .ep-page-nav { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .ep-page-nav button { background: var(--bg3); color: var(--text); border: 1px solid var(--border); padding: 7px 12px; border-radius: 7px; cursor: pointer; font-size: 0.75rem; font-weight: 600; font-family: inherit; transition: all 0.2s; min-height: 34px; min-width: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+  .ep-page-nav button:active { transform: scale(0.96); }
+  .ep-page-nav button:hover:not(:disabled) { border-color: var(--accent); }
+  .ep-page-nav button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .ep-page-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ep-page-nav .ep-range { font-size: 0.72rem; color: var(--text2); padding: 0 4px; white-space: nowrap; }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .anime-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    header { flex-wrap: wrap; gap: 8px; }
+    .search-bar { order: 3; width: 100%; flex: 1 1 100%; }
+    .nav-links { order: 2; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .nav-links::-webkit-scrollbar { display: none; }
+  }
+
+  @media (max-width: 500px) {
+    header { padding: 10px 12px; }
+    .logo { font-size: 1.15rem; }
+    .logo .logo-sub { display: none; }
+    .nav-links a { font-size: 0.72rem; padding: 6px 10px; gap: 4px; min-height: 34px; }
+    .nav-links a span { display: none; }
+    .nav-links a i { font-size: 0.85rem; }
+    .search-bar { padding: 6px 12px; border-radius: 10px; }
+    .search-bar input { font-size: 0.82rem; }
+    .container { padding: 14px 10px; }
+    .anime-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .section-header h2 { font-size: 1.1rem; }
+    .table-item { padding: 8px 10px; gap: 10px; }
+    .table-item .rank { width: 22px; font-size: 0.95rem; }
+    .table-item .thumb { width: 36px; height: 36px; }
+    .table-item .info .title { font-size: 0.8rem; }
+    .episode-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 5px; }
+    .tabs button { font-size: 0.72rem; padding: 7px 10px; }
+    .modal { border-radius: 16px 16px 0 0; max-height: 90vh; padding: 20px 16px; padding-bottom: calc(20px + var(--safe-bottom)); }
+    .modal h2 { font-size: 1.1rem; }
+    .sidebar-item { padding: 7px 8px; gap: 8px; }
+  }
+
+  @media (max-width: 360px) {
+    .logo { font-size: 1rem; }
+    .featured-card { height: 200px; }
+    .featured-card .content { padding: 14px; }
+    .featured-card .content h3 { font-size: 0.95rem; }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .featured-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(233,69,96,0.2); }
+    .featured-card:hover .bg { transform: scale(1.05); }
+    .anime-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 8px 30px rgba(233,69,96,0.15); }
+    .anime-card:hover .poster-wrap img { transform: scale(1.08); }
+    .table-item:hover { background: var(--card-hover); }
+    .sidebar-item:hover { background: var(--card-hover); }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text2); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <i class="fas fa-fire"></i> AniSeKai
+    <span class="logo-sub">/ stream</span>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search anime..." onkeydown="if(event.key==='Enter')searchAnime()">
+    <button onclick="searchAnime()"><i class="fas fa-search"></i></button>
+  </div>
+  <nav class="nav-links">
+    <a href="#" class="active" onclick="loadHome();return false"><i class="fas fa-home"></i> <span>Home</span></a>
+    <a href="#" onclick="loadListing('new-release');return false"><i class="fas fa-plus"></i> <span>New</span></a>
+    <a href="#" onclick="loadListing('latest-updated');return false"><i class="fas fa-sync"></i> <span>Updated</span></a>
+    <a href="#" onclick="loadListing('most-viewed');return false"><i class="fas fa-chart-bar"></i> <span>Popular</span></a>
+  </nav>
+</header>
+
+<div class="container" id="app">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Loading anime data...</p>
+  </div>
+  <div id="content"></div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="episodeModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="episodeContent"></div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '{{API_BASE}}';
+const BASE_PATH = API_BASE.replace(/\/api$/, '');
+window.API_BASE = API_BASE;
+
+function proxyImg(url) {
+  if (!url) return '';
+  return API_BASE + '/image-proxy?url=' + encodeURIComponent(url);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+});
+
+async function loadHome() {
+  setActive('Home');
+  showLoading();
+  try {
+    const res = await fetch(`${API_BASE}/`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    renderHome(json.data);
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+let currentListingType = '';
+
+async function loadListing(type, page) {
+  page = page || 1;
+  currentListingType = type;
+  const label = type.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+  setActive(label);
+  showLoading();
+  try {
+    const res = await fetch(`${API_BASE}/listing?type=${encodeURIComponent(type)}&page=${page}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    renderListing(json.data, type);
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+let currentSearchQuery = '';
+
+async function searchAnime() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) { loadHome(); return; }
+  currentSearchQuery = q;
+  setActive('Search');
+  showLoading();
+  try {
+    const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    renderSearch(json.data);
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+function setActive(label) {
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    if (a.textContent.trim().toLowerCase() === label.toLowerCase()) a.classList.add('active');
+  });
+}
+
+function renderHome(data) {
+  const s = data.sections;
+  const html = [];
+
+  if (s.featured?.items?.length) {
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-star"></i> Featured</h2>
+        <span class="count">${s.featured.totalCount} titles</span>
+      </div>
+      <div class="featured-grid">
+        ${s.featured.items.map(item => `
+          <div class="featured-card" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+            <div class="bg" style="background-image:url('${proxyImg(item.poster)}');background-color:var(--bg3);background-size:cover;background-position:center;"></div>
+            <div class="overlay"></div>
+            <div class="content">
+              <div class="meta-tags">
+                ${item.rating ? `<span class="rating"><i class="fas fa-star"></i> ${item.rating}</span>` : ''}
+                ${item.quality ? `<span class="hd">${item.quality}</span>` : ''}
+                ${item.date ? `<span>${item.date}</span>` : ''}
+                ${item.hasSub ? `<span><i class="fas fa-closed-captioning"></i></span>` : ''}
+                ${item.hasDub ? `<span><i class="fas fa-microphone"></i></span>` : ''}
+              </div>
+              <h3>${item.title}</h3>
+              ${item.synopsis ? `<p class="synopsis-text">${item.synopsis}</p>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`);
+  }
+
+  html.push(`<div class="two-col"><div class="main-col">`);
+
+  if (s.latestEpisodes?.items?.length) {
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-play-circle"></i> Latest Episodes</h2>
+        <span class="count">${s.latestEpisodes.totalCount} items</span>
+      </div>
+      <div class="anime-grid">
+        ${s.latestEpisodes.items.map(item => `
+          <div class="anime-card" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+            <div class="poster-wrap">
+              <img src="${proxyImg(item.poster)}" alt="${item.title}" loading="lazy" onerror="onImgError(this)">
+              ${item.episode?.sub ? `<span class="ep-badge">EP ${item.episode.sub}</span>` : item.episode?.total ? `<span class="ep-badge">${item.episode.total}</span>` : ''}
+              ${item.type ? `<span class="type-badge">${item.type}</span>` : ''}
+            </div>
+            <div class="card-info">
+              <h4>${item.title}</h4>
+              <div class="ep-info">
+                ${item.episode?.sub ? `<span class="sub"><i class="fas fa-closed-captioning"></i> ${item.episode.sub}</span>` : ''}
+                ${item.episode?.dub ? `<span class="dub"><i class="fas fa-microphone"></i> ${item.episode.dub}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`);
+  }
+
+  if (s.upcoming?.items?.length) {
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-clock"></i> Upcoming Anime</h2>
+        <span class="count">${s.upcoming.totalCount} titles</span>
+      </div>
+      <div class="anime-grid">
+        ${s.upcoming.items.map(item => `
+          <div class="anime-card" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+            <div class="poster-wrap">
+              <img src="${proxyImg(item.poster)}" alt="${item.title}" loading="lazy" onerror="onImgError(this)">
+              ${item.type ? `<span class="type-badge">${item.type}</span>` : ''}
+            </div>
+            <div class="card-info">
+              <h4>${item.title}</h4>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`);
+  }
+
+  if (s.newRelease?.items?.length) {
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-bolt"></i> New Release</h2>
+        <span class="count">${s.newRelease.totalCount} titles</span>
+      </div>
+      <div class="table-items">
+        ${s.newRelease.items.map((item, i) => `
+          <div class="table-item" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+            <span class="rank">${i+1}</span>
+            <div class="thumb"><img src="${proxyImg(item.poster)}" alt="" onerror="onImgError(this)"></div>
+            <div class="info">
+              <div class="title">${item.title}</div>
+              <div class="subinfo">
+                ${item.episode?.sub || item.episode?.total ? `<span>EP ${item.episode.sub || item.episode.total}</span>` : item.date ? `<span>${item.date}</span>` : ''}
+                ${item.type ? `<span>${item.type}</span>` : ''}
+              </div>
+            </div>
+            ${item.episode?.sub || item.episode?.total ? `<span class="status ep">EP ${item.episode.sub || item.episode.total}</span>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </section>`);
+  }
+
+  if (s.newAdded?.items?.length || s.justCompleted?.items?.length) {
+    const nrItems = s.newAdded?.items || [];
+    const jcItems = s.justCompleted?.items || [];
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-list"></i> More Releases</h2>
+      </div>
+      <div class="tabs" id="releaseTabs">
+        <button class="active" onclick="switchTab('new-added-tab',this)">New Added (${nrItems.length})</button>
+        <button onclick="switchTab('just-completed-tab',this)">Just Completed (${jcItems.length})</button>
+      </div>
+      <div id="new-added-tab">
+        <div class="table-items">
+          ${nrItems.map((item, i) => `
+            <div class="table-item" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+              <span class="rank">${i+1}</span>
+              <div class="thumb"><img src="${proxyImg(item.poster)}" alt="" onerror="onImgError(this)"></div>
+              <div class="info">
+                <div class="title">${item.title}</div>
+                <div class="subinfo">
+                  ${item.episode?.sub || item.episode?.total ? `<span>EP ${item.episode.sub || item.episode.total}</span>` : ''}
+                  ${item.type ? `<span>${item.type}</span>` : ''}
+                  ${item.date ? `<span>${item.date}</span>` : ''}
+                </div>
+              </div>
+              ${item.episode?.sub || item.episode?.total ? `<span class="status ep">EP ${item.episode.sub || item.episode.total}</span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div id="just-completed-tab" style="display:none">
+        <div class="table-items">
+          ${jcItems.map((item, i) => `
+            <div class="table-item" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+              <span class="rank">${i+1}</span>
+              <div class="thumb"><img src="${proxyImg(item.poster)}" alt="" onerror="onImgError(this)"></div>
+              <div class="info">
+                <div class="title">${item.title}</div>
+                <div class="subinfo">
+                  ${item.episode?.sub || item.episode?.total ? `<span>EP ${item.episode.sub || item.episode.total}</span>` : ''}
+                  ${item.type ? `<span>${item.type}</span>` : ''}
+                  ${item.date ? `<span>${item.date}</span>` : ''}
+                </div>
+              </div>
+              ${item.episode?.sub || item.episode?.total ? `<span class="status ep">EP ${item.episode.sub || item.episode.total}</span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </section>`);
+  }
+
+  html.push(`</div><div class="side-col">`);
+
+  if (s.topAnime?.items?.length) {
+    const topItems = s.topAnime.items;
+    html.push(`<section class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-trophy"></i> Top Anime</h2>
+        <span class="count">${topItems.length}</span>
+      </div>
+      <div class="sidebar-items">
+        ${topItems.slice(0, 5).map((item, i) => `
+          <div class="sidebar-item" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+            <span class="rank-num">${i+1}</span>
+            <div class="thumb"><img src="${proxyImg(item.poster)}" alt="" onerror="onImgError(this)"></div>
+            <div class="info">
+              <div class="name">${item.title}</div>
+              <div class="meta">
+                ${item.episode?.sub ? `<span><i class="fas fa-closed-captioning"></i> ${item.episode.sub}</span>` : ''}
+                ${item.type ? `<span>${item.type}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>`);
+  }
+
+  html.push(`</div></div>`);
+  document.getElementById('content').innerHTML = html.join('');
+  document.getElementById('loading').style.display = 'none';
+}
+
+function renderListing(data, type) {
+  type = type || currentListingType;
+  const items = data.animeList || [];
+  const pagination = data.pagination || null;
+  const html = [];
+  html.push(`<section class="section">
+    <div class="section-header">
+      <h2><i class="fas fa-list"></i> ${data.page || 'Listing'}</h2>
+      <span class="count">${data.totalCount} items${pagination ? ` (Page ${pagination.currentPage}/${pagination.totalPages})` : ''}</span>
+    </div>
+    ${pagination && pagination.totalPages > 1 ? renderListingPagination(pagination, type) : ''}
+    <div class="anime-grid">
+      ${items.map(item => `
+        <div class="anime-card" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+          <div class="poster-wrap">
+            <img src="${proxyImg(item.poster)}" alt="${item.title}" loading="lazy" onerror="onImgError(this)">
+            ${item.episode?.sub ? `<span class="ep-badge">EP ${item.episode.sub}</span>` : item.episode?.total ? `<span class="ep-badge">${item.episode.total}</span>` : ''}
+            ${item.type ? `<span class="type-badge">${item.type}</span>` : ''}
+          </div>
+          <div class="card-info">
+            <h4>${item.title}</h4>
+            <div class="ep-info">
+              ${item.episode?.sub ? `<span class="sub"><i class="fas fa-closed-captioning"></i> ${item.episode.sub}</span>` : ''}
+              ${item.episode?.dub ? `<span class="dub"><i class="fas fa-microphone"></i> ${item.episode.dub}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </section>`);
+
+  document.getElementById('content').innerHTML = html.join('');
+  document.getElementById('loading').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderListingPagination(pagination, type) {
+  const { currentPage, totalPages } = pagination;
+  let buttons = [];
+  buttons.push(`<button ${currentPage <= 1 ? 'disabled' : ''} onclick="loadListing('${type}', ${currentPage - 1})"><i class="fas fa-chevron-left"></i> Prev</button>`);
+  const range = getPaginationRange(currentPage, totalPages, 7);
+  for (const p of range) {
+    if (p === '...') {
+      buttons.push(`<span class="page-info">…</span>`);
+    } else {
+      buttons.push(`<button class="${p === currentPage ? 'active' : ''}" onclick="loadListing('${type}', ${p})">${p}</button>`);
+    }
+  }
+  buttons.push(`<button ${currentPage >= totalPages ? 'disabled' : ''} onclick="loadListing('${type}', ${currentPage + 1})">Next <i class="fas fa-chevron-right"></i></button>`);
+  return `<div class="pagination">${buttons.join('')}</div>`;
+}
+
+function getPaginationRange(current, total, maxVisible) {
+  if (total <= maxVisible) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = [];
+  const half = Math.floor(maxVisible / 2);
+  let start = Math.max(2, current - half);
+  let end = Math.min(total - 1, current + half);
+  if (current <= half + 1) end = maxVisible - 1;
+  if (current >= total - half) start = total - maxVisible + 2;
+  pages.push(1);
+  if (start > 2) pages.push('...');
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push('...');
+  pages.push(total);
+  return pages;
+}
+
+function renderSearch(data) {
+  const items = data.results || [];
+  const html = [];
+  html.push(`<section class="section">
+    <div class="section-header">
+      <h2><i class="fas fa-search"></i> Results for "${data.query}"</h2>
+      <span class="count">${data.totalCount} found</span>
+    </div>
+    ${items.length ? `<div class="anime-grid">
+      ${items.map(item => `
+        <div class="anime-card" onclick="showDetail('${item.id}','${item.title.replace(/'/g,"\\'")}')">
+          <div class="poster-wrap">
+            <img src="${proxyImg(item.poster)}" alt="${item.title}" loading="lazy" onerror="onImgError(this)">
+            ${item.type ? `<span class="type-badge">${item.type}</span>` : ''}
+          </div>
+          <div class="card-info">
+            <h4>${item.title}</h4>
+            ${item.episode?.sub ? `<div class="ep-info"><span class="sub"><i class="fas fa-closed-captioning"></i> ${item.episode.sub}</span></div>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>` : `<p style="color:var(--text2);text-align:center;padding:40px 20px;">No results found for "${data.query}"</p>`}
+  </section>`);
+
+  document.getElementById('content').innerHTML = html.join('');
+  document.getElementById('loading').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function showDetail(id, title) {
+  if (!id) return;
+  document.getElementById('modalContent').innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading details...</p></div>`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const res = await fetch(`${API_BASE}/info?id=${encodeURIComponent(id)}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+
+    const d = json.data;
+    const hasEpisodes = d.totalEpisodes > 0;
+    document.getElementById('modalContent').innerHTML = `
+      <h2>${d.title || title}</h2>
+      ${d.titleJp ? `<p style="color:var(--text2);font-size:0.82rem;margin-bottom:10px;">${d.titleJp}</p>` : ''}
+      <div class="modal-meta">
+        ${d.rating ? `<span><i class="fas fa-star" style="color:#ffd700"></i> ${d.rating}</span>` : ''}
+        ${d.genres?.slice(0,4).map(g => `<span>${g}</span>`).join('') || ''}
+        ${d.metadata?.type ? `<span>${d.metadata.type}</span>` : ''}
+        ${d.metadata?.status ? `<span>${d.metadata.status}</span>` : ''}
+        ${d.metadata?.season ? `<span>${d.metadata.season}</span>` : ''}
+      </div>
+      ${d.poster ? `<img class="modal-poster" src="${proxyImg(d.poster)}" alt="${d.title}" onerror="onImgError(this)">` : ''}
+      ${d.synopsis ? `<p>${d.synopsis}</p>` : '<p style="color:var(--text2);font-style:italic;">No synopsis available.</p>'}
+      ${d.metadata ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">${Object.entries(d.metadata).map(([k,v]) => `<span style="font-size:0.7rem;color:var(--text2);background:var(--bg3);padding:3px 8px;border-radius:5px;"><strong>${k}</strong>: ${v}</span>`).join('')}</div>` : ''}
+      ${d.totalEpisodes ? `<p style="margin-top:10px;color:var(--accent);font-weight:600;font-size:0.88rem;"><i class="fas fa-film"></i> ${d.totalEpisodes} episodes</p>` : ''}
+      ${hasEpisodes ? `<button class="watch-btn" onclick="loadEpisodes('${id}')"><i class="fas fa-play"></i> Watch Episodes</button>` : `<p style="color:var(--text2);font-style:italic;">No episodes available.</p>`}
+    `;
+  } catch (e) {
+    document.getElementById('modalContent').innerHTML = `
+      <h2>${title}</h2>
+      <p style="color:var(--text2);">Could not load details: ${e.message}</p>
+      <button onclick="loadEpisodes('${id}')" class="watch-btn"><i class="fas fa-play"></i> Try Watching</button>
+    `;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('episodeModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+const EP_PAGE_SIZE = 50;
+let epCurrentAnimeId = '';
+let epAllEpisodes = [];
+let epCurrentPage = 1;
+
+async function loadEpisodes(animeId) {
+  closeModal();
+  document.getElementById('episodeContent').innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading episodes...</p></div>`;
+  document.getElementById('episodeModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const res = await fetch(`${API_BASE}/episodes?id=${encodeURIComponent(animeId)}`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+
+    epCurrentAnimeId = animeId;
+    epAllEpisodes = json.data.episodes || [];
+    epCurrentPage = 1;
+    renderEpisodeModal();
+  } catch (e) {
+    document.getElementById('episodeContent').innerHTML = `
+      <h2>Episodes</h2>
+      <p style="color:var(--text2);">Could not load episodes: ${e.message}</p>
+    `;
+  }
+}
+
+function renderEpisodeModal() {
+  const total = epAllEpisodes.length;
+  const totalPages = Math.ceil(total / EP_PAGE_SIZE);
+  const startIdx = (epCurrentPage - 1) * EP_PAGE_SIZE;
+  const endIdx = Math.min(startIdx + EP_PAGE_SIZE, total);
+  const pageEps = epAllEpisodes.slice(startIdx, endIdx);
+
+  let paginationHtml = '';
+  if (totalPages > 1) {
+    let btns = [];
+    btns.push(`<button ${epCurrentPage <= 1 ? 'disabled' : ''} onclick="goEpPage(${epCurrentPage - 1})"><i class="fas fa-chevron-left"></i></button>`);
+    const range = getPaginationRange(epCurrentPage, totalPages, 7);
+    for (const p of range) {
+      if (p === '...') {
+        btns.push(`<span class="ep-range">…</span>`);
+      } else {
+        btns.push(`<button class="${p === epCurrentPage ? 'active' : ''}" onclick="goEpPage(${p})">${p}</button>`);
+      }
+    }
+    btns.push(`<button ${epCurrentPage >= totalPages ? 'disabled' : ''} onclick="goEpPage(${epCurrentPage + 1})"><i class="fas fa-chevron-right"></i></button>`);
+    paginationHtml = `<div class="ep-page-nav">
+      <span class="ep-range">${startIdx + 1}–${endIdx} of ${total}</span>
+      ${btns.join('')}
+    </div>`;
+  }
+
+  document.getElementById('episodeContent').innerHTML = `
+    <h2>Episodes (${total})</h2>
+    <p style="color:var(--text2);font-size:0.82rem;margin-bottom:8px;">
+      Select an episode to start watching.
+    </p>
+    <div class="episode-grid">
+      ${pageEps.map(ep => `
+        <a href="${BASE_PATH}/watch/${epCurrentAnimeId}/${ep.episode}" class="episode-item">
+          <span class="ep-num">EP ${ep.episode}</span>
+          <span class="ep-badges">
+            ${ep.subtitled ? '<span class="badge-sub">SUB</span>' : ''}
+            ${ep.dubbed ? '<span class="badge-dub">DUB</span>' : ''}
+          </span>
+        </a>
+      `).join('')}
+    </div>
+    ${paginationHtml}
+  `;
+}
+
+function goEpPage(page) {
+  const totalPages = Math.ceil(epAllEpisodes.length / EP_PAGE_SIZE);
+  if (page < 1 || page > totalPages) return;
+  epCurrentPage = page;
+  renderEpisodeModal();
+  const scrollEl = document.getElementById('episodeModal').querySelector('.modal');
+  if (scrollEl) scrollEl.scrollTop = 0;
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('#releaseTabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('new-added-tab').style.display = 'none';
+  document.getElementById('just-completed-tab').style.display = 'none';
+  document.getElementById(tabId).style.display = 'block';
+}
+
+function showLoading() {
+  document.getElementById('loading').style.display = 'flex';
+}
+
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').innerHTML = `
+    <div class="error-state">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Something went wrong</h3>
+      <p>${msg}</p>
+      <button onclick="loadHome()">Try Again</button>
+    </div>
+  `;
+}
+
+loadHome();
+</script>
+</body>
+</html>

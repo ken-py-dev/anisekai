@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{{META_TITLE}} - Ep {{EP}} - AniseKai</title>
+<meta name="description" content="{{META_DESC}}">
+<meta property="og:title" content="{{META_TITLE}} - Episode {{EP}}">
+<meta property="og:description" content="{{META_DESC}}">
+<meta property="og:type" content="video.episode">
+{{META_IMAGE}}
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0a0a0f">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="app.js" defer></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a2e;
+    --card: #16213e;
+    --accent: #e94560;
+    --accent-hover: #d63850;
+    --text: #e8e8e8;
+    --text2: #8899aa;
+    --border: #2a2a3e;
+    --gradient: linear-gradient(135deg, #e94560, #0f3460);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border); padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-size: 1.2rem; font-weight: 800; background: var(--gradient);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    white-space: nowrap; letter-spacing: -0.3px;
+    display: flex; align-items: center; gap: 6px; min-width: 0;
+  }
+  .logo i { -webkit-text-fill-color: var(--accent); font-size: 1.1rem; }
+  .logo .logo-sub { font-size: 0.65rem; color: var(--text2); -webkit-text-fill-color: var(--text2); background: none; font-weight: 500; }
+
+  .header-nav { margin-left: auto; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .header-nav a {
+    color: var(--text2); text-decoration: none; font-size: 0.8rem;
+    padding: 6px 12px; border-radius: 8px; transition: all 0.2s; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .header-nav a:hover { background: var(--bg3); color: var(--text); }
+  .header-nav a:active { transform: scale(0.96); }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 16px; }
+
+  .info-row { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+  .info-row .poster { width: 110px; flex-shrink: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  .info-row .poster img { width: 100%; display: block; border-radius: 10px; }
+  .info-row .meta { flex: 1; min-width: 0; }
+  .info-row .meta h1 { font-size: 1.35rem; font-weight: 700; line-height: 1.3; margin-bottom: 4px; word-wrap: break-word; }
+  .info-row .meta .ep-label { color: var(--accent); font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .info-row .meta p { color: var(--text2); font-size: 0.82rem; line-height: 1.55; }
+
+  .player-wrap {
+    width: 100%; max-width: 900px; margin: 0 auto 16px; position: relative;
+    padding-bottom: 56.25%; height: 0; background: #000;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+  .player-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .controls button, .controls a {
+    background: var(--accent); color: #fff; border: none; padding: 10px 18px;
+    border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+    font-family: inherit; text-decoration: none; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent; min-height: 42px;
+  }
+  .controls button:hover, .controls a:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .controls button:active, .controls a:active { transform: scale(0.97); }
+  .controls select {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; font-family: inherit;
+    flex: 1; min-width: 0; min-height: 42px; -webkit-appearance: none;
+    appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238899aa' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
+  }
+  .controls select:focus { border-color: var(--accent); outline: none; }
+
+  .episode-nav { display: flex; gap: 8px; margin-top: 4px; }
+  .episode-nav a {
+    background: var(--card); color: var(--text); text-decoration: none;
+    padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.2s; border: 1px solid transparent;
+    display: inline-flex; align-items: center; gap: 6px; flex: 1;
+    justify-content: center; min-height: 42px; -webkit-tap-highlight-color: transparent; text-align: center;
+  }
+  .episode-nav a:hover { border-color: var(--accent); background: #1f2f50; transform: translateY(-1px); }
+  .episode-nav a:active { transform: scale(0.97); }
+  .episode-nav a.prev, .episode-nav a.next { color: #60a5fa; }
+
+  .status { font-size: 0.78rem; color: var(--text2); margin-top: 14px; display: flex; align-items: center; gap: 6px; }
+  .status.ok { color: #4ade80; }
+
+  .downloads { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .downloads-title { font-size: 0.82rem; font-weight: 600; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .download-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .download-links a {
+    background: var(--card); color: var(--text); text-decoration: none; padding: 8px 16px;
+    border-radius: 8px; font-size: 0.82rem; font-weight: 500; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
+    min-height: 38px;
+  }
+  .download-links a:hover { border-color: var(--accent); background: #1f2f50; transform: translateY(-1px); }
+  .download-links a:active { transform: scale(0.97); }
+
+  .spinner-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10; border-radius: 12px; }
+  .spinner-overlay.active { display: flex; }
+  .spinner-overlay .spinner { width: 44px; height: 44px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    header { padding: 10px 14px; gap: 10px; }
+    .logo { font-size: 1.05rem; }
+    .logo .logo-sub { display: none; }
+    .container { padding: 14px 12px; }
+    .player-wrap { margin-bottom: 14px; }
+    .info-row { gap: 14px; }
+    .info-row .poster { width: 90px; }
+    .info-row .meta h1 { font-size: 1.2rem; }
+  }
+
+  @media (max-width: 500px) {
+    header { padding: 10px 12px; }
+    .logo { font-size: 0.95rem; gap: 5px; }
+    .header-nav a { font-size: 0.72rem; padding: 5px 8px; gap: 4px; }
+    .header-nav a span { display: none; }
+    .container { padding: 8px; }
+    .player-wrap { max-width: 100%; margin: 0 0 12px; border-radius: 8px; }
+    .info-row { gap: 12px; }
+    .info-row .poster { width: 75px; border-radius: 8px; }
+    .info-row .meta h1 { font-size: 1.05rem; }
+    .info-row .meta .ep-label { font-size: 0.78rem; }
+    .info-row .meta p { font-size: 0.78rem; -webkit-line-clamp: 3; overflow: hidden; }
+    .controls button, .controls a, .controls select { padding: 9px 14px; font-size: 0.8rem; border-radius: 8px; min-height: 40px; }
+    .episode-nav a { padding: 9px 12px; font-size: 0.8rem; border-radius: 8px; min-height: 40px; }
+    .status { font-size: 0.72rem; }
+    .info-row { flex-direction: column; align-items: center; text-align: center; }
+    .info-row .poster { width: 100px; }
+    .info-row .meta { text-align: left; width: 100%; }
+    .controls { flex-direction: column; }
+    .controls button, .controls a, .controls select { width: 100%; justify-content: center; }
+    .episode-nav { flex-direction: column; }
+    .episode-nav a { width: 100%; }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .controls button:hover, .controls a:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(233,69,96,0.3); }
+    .episode-nav a:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(96,165,250,0.2); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <i class="fas fa-fire"></i>
+    AniSeKai
+    <span class="logo-sub">/ watch</span>
+  </div>
+  <nav class="header-nav">
+    <a href="{{BASE_PATH}}/"><i class="fas fa-arrow-left"></i> <span>Home</span></a>
+    <a href="{{BASE_PATH}}/docs"><i class="fas fa-book"></i> <span>API</span></a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="player-wrap" id="player-wrap">
+    <div class="spinner-overlay" id="spinner-overlay">
+      <div class="spinner"></div>
+    </div>
+    <iframe src="{{PLAYER_URL}}" allow="autoplay; fullscreen" allowfullscreen frameborder="0" id="player-frame" data-fallback="{{EMBED_URL}}"></iframe>
+<script>!function(){var e=document.getElementById('player-frame');(!e.src||e.src===window.location.href||e.src==='')&&(e.src=e.dataset.fallback||'')}();</script>
+  </div>
+
+  <div class="controls">
+    <button onclick="reloadFrame()"><i class="fas fa-sync"></i> Reload</button>
+    {{SERVER_DROPDOWN}}
+    <select id="subtitle-select" onchange="switchSubtitle(this)" style="display:none" title="Subtitle language">
+      <option value="">Off</option>
+    </select>
+  </div>
+
+  <div id="download-section" class="downloads" style="display:none;margin-bottom:14px">
+    <div class="downloads-title"><i class="fas fa-download"></i> Download</div>
+    <div id="download-links" class="download-links"></div>
+  </div>
+
+  <div class="episode-nav">
+    {{PREV_LINK}}
+    {{NEXT_LINK}}
+  </div>
+
+  <p class="status{{STATUS_CLASS}}">
+    {{STATUS_ICON}} {{STATUS_TEXT}}
+  </p>
+
+  <div class="info-row">
+    {{POSTER_TAG}}
+    <div class="meta">
+      <h1>{{PAGE_TITLE}}</h1>
+      <div class="ep-label"><i class="fas fa-play"></i> Episode {{EP}}{{TOTAL_LABEL}}</div>
+      {{DESC_HTML}}
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '{{API_BASE}}';
+const BASE_PATH = API_BASE.replace(/\/api$/, '');
+window.API_BASE = API_BASE;
+const slug = '{{SLUG_JS}}';
+let ep = {{EP_JS}};
+const __SERVERS__ = {{SERVERS_JSON}};
+const __PLAYER_BASE__ = '{{PLAYER_BASE}}';
+
+function reloadFrame() {
+  const frame = document.getElementById('player-frame');
+  const src = frame.src;
+  frame.src = '';
+  setTimeout(() => { frame.src = src; }, 100);
+}
+
+function showSpinner() {
+  document.getElementById('spinner-overlay').classList.add('active');
+}
+
+function hideSpinner() {
+  document.getElementById('spinner-overlay').classList.remove('active');
+}
+
+async function navigateEp(newEp) {
+  showSpinner();
+  try {
+    function getSubParam() {
+      const p = new URLSearchParams(window.location.search);
+      return p.get('sub') || '';
+    }
+
+    const [infoRes, streamRes] = await Promise.all([
+      fetch(`${API_BASE}/info?id=${encodeURIComponent(slug)}`),
+      fetch(`${API_BASE}/stream?id=${encodeURIComponent(slug)}&ep=${newEp}&sub=${encodeURIComponent(getSubParam())}`),
+    ]);
+    const infoJson = await infoRes.json();
+    const streamJson = await streamRes.json();
+    if (!streamJson.success) throw new Error(streamJson.error);
+    const info = infoJson?.data || {};
+    const d = streamJson.data || {};
+    ep = newEp;
+    document.querySelector('.info-row .meta h1').textContent = info.title || slug;
+    const posterWrap = document.querySelector('.info-row .poster');
+    if (posterWrap) {
+      const img = posterWrap.querySelector('img');
+      if (img) {
+        img.style.display = '';
+        img.src = info.poster ? API_BASE + '/image-proxy?url=' + encodeURIComponent(info.poster) : '';
+      }
+    }
+    const frame = document.getElementById('player-frame');
+    const firstServer = (d.servers || []).find(s => s.playerUrl || s.url);
+    const playerUrl = firstServer?.playerUrl || '';
+    const fallbackUrl = firstServer?.url || '';
+    frame.dataset.fallback = fallbackUrl;
+    frame.src = playerUrl || fallbackUrl;
+    const epLabel = document.querySelector('.ep-label');
+    if (epLabel) epLabel.innerHTML = `<i class="fas fa-play"></i> Episode ${newEp}${info.totalEpisodes ? ' of ' + info.totalEpisodes : ''}`;
+    const descEl = document.querySelector('.info-row .meta p');
+    if (descEl) descEl.textContent = info.synopsis || '';
+    const serverSelect = document.getElementById('server-select');
+    if (serverSelect) {
+      serverSelect.innerHTML = '<option value="">Select server...</option>' + (d.servers || []).map((s, i) =>
+        `<option value="${(s.playerUrl || s.url || '')}" data-fallback="${(s.url || '')}" data-server-index="${i}">${s.name} (${s.type})</option>`
+      ).join('');
+      __SERVERS__.splice(0, __SERVERS__.length, ...(d.servers || []));
+      if (serverSelect.options.length > 1) serverSelect.selectedIndex = 1;
+      onServerChange(serverSelect);
+    }
+    function updateLink(sel, show, epNum, icon, label) {
+      let el = document.querySelector(sel);
+      if (!el) {
+        el = document.createElement('a');
+        el.href = 'javascript:void(0)';
+        el.className = sel.replace('.', '');
+        document.querySelector('.episode-nav').appendChild(el);
+      }
+      el.setAttribute('onclick', `navigateEp(${epNum})`);
+      el.innerHTML = icon ? `${icon} Ep ${epNum}` : `Ep ${epNum} ${label || ''}`;
+      el.style.display = show ? '' : 'none';
+    }
+    updateLink('.prev', newEp > 1, newEp - 1, '<i class="fas fa-chevron-left"></i>');
+    updateLink('.next', info.totalEpisodes > newEp, newEp + 1, '', '<i class="fas fa-chevron-right"></i>');
+    const statusEl = document.querySelector('.status');
+    if (statusEl) {
+      if (playerUrl) {
+        statusEl.className = 'status ok';
+        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Loading player...';
+      } else {
+        statusEl.className = 'status';
+        statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Select a server above to start watching';
+      }
+    }
+  } catch (e) {
+    console.error('Navigation error:', e.message);
+  } finally {
+    hideSpinner();
+  }
+}
+
+async function switchServer(sel) {
+  onServerChange(sel);
+  const option = sel.options[sel.selectedIndex];
+  const url = sel.value || (option ? option.dataset.fallback : '');
+  if (!url) return;
+  const frame = document.getElementById('player-frame');
+  frame.dataset.fallback = (option ? option.dataset.fallback : '') || '';
+  frame.src = '';
+  setTimeout(() => { frame.src = url; }, 50);
+  const statusEl = document.querySelector('.status');
+  if (statusEl) { statusEl.className = 'status ok'; statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Loading...'; }
+}
+
+function updateSubtitleDropdown(serverSelect) {
+  const idx = serverSelect.selectedIndex;
+  const option = serverSelect.options[idx];
+  const serverIdx = option ? option.dataset.serverIndex : null;
+  const server = (serverIdx != null) ? (__SERVERS__[parseInt(serverIdx)] || null) : null;
+  const subSelect = document.getElementById('subtitle-select');
+  if (!subSelect) return;
+  subSelect.innerHTML = '<option value="">Off</option>';
+  if (server && server.tracks && server.tracks.length) {
+    var hasDefault = false;
+    server.tracks.forEach(function(t, i) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = t.label || ('Track ' + (i + 1));
+      if (t.default) { opt.selected = true; hasDefault = true; }
+      subSelect.appendChild(opt);
+    });
+    if (!hasDefault && server.tracks.length > 0) {
+      subSelect.options[1].selected = true;
+    }
+    subSelect.style.display = '';
+  } else {
+    subSelect.style.display = 'none';
+  }
+}
+
+function switchSubtitle(subSelect) {
+  const serverSelect = document.getElementById('server-select');
+  if (!serverSelect) return;
+  const idx = serverSelect.selectedIndex;
+  const option = serverSelect.options[idx];
+  const serverIdx = option ? option.dataset.serverIndex : null;
+  const server = (serverIdx != null) ? (__SERVERS__[parseInt(serverIdx)] || null) : null;
+  if (!server) return;
+
+  let trackIdx = parseInt(subSelect.value);
+  if (isNaN(trackIdx)) trackIdx = -1;
+  const track = (trackIdx >= 0 && server.tracks && server.tracks[trackIdx]) ? server.tracks[trackIdx] : null;
+
+  let url;
+  if (server.proxyUrl) {
+    url = __PLAYER_BASE__ + '?url=' + encodeURIComponent(server.proxyUrl);
+  } else {
+    const f = document.getElementById('player-frame');
+    f.dataset.fallback = server.url || '';
+    f.src = '';
+    setTimeout(function() { f.src = server.playerUrl || server.url || ''; }, 50);
+    const s = document.querySelector('.status');
+    if (s) { s.className = 'status ok'; s.innerHTML = '<i class="fas fa-check-circle"></i> Loading...'; }
+    return;
+  }
+  if (track && (track.proxyUrl || track.file)) {
+    url += '&sub=' + encodeURIComponent(track.proxyUrl || track.file);
+    if (track.label) url += '&subLabel=' + encodeURIComponent(track.label);
+    if (track.language) url += '&subLang=' + encodeURIComponent(track.language);
+  }
+
+  const frame = document.getElementById('player-frame');
+  frame.dataset.fallback = server.url || '';
+  frame.src = '';
+  setTimeout(function() { frame.src = url; }, 50);
+  const statusEl = document.querySelector('.status');
+  if (statusEl) {
+    statusEl.className = 'status ok';
+    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Loading...';
+  }
+}
+
+function updateDownloadLinks(server) {
+  const section = document.getElementById('download-section');
+  const container = document.getElementById('download-links');
+  if (!section || !container) return;
+  if (!server || !server.downloadLinks) {
+    section.style.display = 'none';
+    return;
+  }
+  const links = server.downloadLinks;
+  const keys = Object.keys(links);
+  if (!keys.length) { section.style.display = 'none'; return; }
+  container.innerHTML = keys.map(function(k) {
+    var item = links[k];
+    var url = item.proxyUrl || item.url || '';
+    var label = k.replace(/^[^-]+-/, '');
+    return '<a href="' + url + '" target="_blank" rel="noopener"><i class="fas fa-file-video"></i> ' + label + '</a>';
+  }).join('');
+  section.style.display = '';
+}
+
+function onServerChange(sel) {
+  updateSubtitleDropdown(sel);
+  const option = sel.options[sel.selectedIndex];
+  const idx = option ? option.dataset.serverIndex : null;
+  const server = (idx != null) ? (__SERVERS__[parseInt(idx)] || null) : null;
+  updateDownloadLinks(server);
+}
+
+const serverSelect = document.getElementById('server-select');
+if (serverSelect) {
+  serverSelect.addEventListener('change', function() { onServerChange(this); });
+  if (serverSelect.selectedIndex > 0) {
+    updateSubtitleDropdown(serverSelect);
+    onServerChange(serverSelect);
+  }
+}
+</script>
+</body>
+</html>

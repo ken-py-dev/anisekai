@@ -1,0 +1,17 @@
+{
+  "name": "anikoto-scraper",
+  "version": "1.0.0",
+  "description": "AniKoto Scraper — anime streaming API, viewer, and SEO watch pages",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.7.0",
+    "axios-http2-adapter": "^1.0.3",
+    "cheerio": "^1.0.0",
+    "express": "^4.22.1",
+    "node-cache": "^5.1.2"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js"
+  }
+}
