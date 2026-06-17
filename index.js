@@ -621,18 +621,14 @@ router.get("/player", async (req, res) => {
   try {
     const qs = new URLSearchParams(req.query).toString();
     const dest = `https://www.ken-py-dev.gleeze.com/player?${qs}`;
-    const primaryAlive = await axios.get(dest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-    if (primaryAlive) return res.redirect(dest);
-    const fallbackDest = `https://allanime.day/player?${qs}`;
-    const fallbackAlive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-    if (fallbackAlive) return res.redirect(fallbackDest);
-    res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
-  } catch (err) {
+    const response = await axios.get(dest, { responseType: "text", validateStatus: s => s < 400 });
+    return res.type("html").send(response.data);
+  } catch {
     try {
       const qs = new URLSearchParams(req.query).toString();
       const fallbackDest = `https://allanime.day/player?${qs}`;
-      const alive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-      if (alive) return res.redirect(fallbackDest);
+      const response = await axios.get(fallbackDest, { responseType: "text", validateStatus: s => s < 400 });
+      return res.type("html").send(response.data);
     } catch {}
     res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
   }
