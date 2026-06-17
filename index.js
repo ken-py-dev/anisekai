@@ -31,6 +31,27 @@ const http2Axios = axios.create({
   maxRedirects: 5,
 });
 
+function buildPlayerUrl(playerUrl, hlsProxyUrl, tracks, preferredSubUrl, intro, outro) {
+  let url = `${playerUrl}?url=${encodeURIComponent(hlsProxyUrl)}`;
+  const valid = tracks ? tracks.filter(Boolean) : [];
+  if (valid.length > 0) {
+    let track = valid.find(t => t.default) || valid[0];
+    if (preferredSubUrl) {
+      const match = valid.find(t => t.file === preferredSubUrl || t.proxyUrl === preferredSubUrl);
+      if (match) track = match;
+    }
+    const subUrl = track.proxyUrl || track.file;
+    if (subUrl) {
+      url += `&sub=${encodeURIComponent(subUrl)}`;
+      if (track.label) url += `&subLabel=${encodeURIComponent(track.label)}`;
+      if (track.language) url += `&subLang=${encodeURIComponent(track.language)}`;
+    }
+  }
+  if (intro && intro.end > intro.start) url += `&intro=${intro.start}-${intro.end}`;
+  if (outro && outro.end > outro.start) url += `&outro=${outro.start}-${outro.end}`;
+  return url;
+}
+
 function getMobileHeaders(origin, referer) {
   return {
     'Host': new URL(origin || referer).hostname,
@@ -463,28 +484,6 @@ router.get("/docs", (req, res) => {
 
 
 const WATCH_TEMPLATE = fs.readFileSync(path.join(__dirname, 'public', 'watch.html'), 'utf8');
-
-
-function buildPlayerUrl(playerUrl, hlsProxyUrl, tracks, preferredSubUrl, intro, outro) {
-  let url = `${playerUrl}?url=${encodeURIComponent(hlsProxyUrl)}`;
-  const valid = tracks ? tracks.filter(Boolean) : [];
-  if (valid.length > 0) {
-    let track = valid.find(t => t.default) || valid[0];
-    if (preferredSubUrl) {
-      const match = valid.find(t => t.file === preferredSubUrl || t.proxyUrl === preferredSubUrl);
-      if (match) track = match;
-    }
-    const subUrl = track.proxyUrl || track.file;
-    if (subUrl) {
-      url += `&sub=${encodeURIComponent(subUrl)}`;
-      if (track.label) url += `&subLabel=${encodeURIComponent(track.label)}`;
-      if (track.language) url += `&subLang=${encodeURIComponent(track.language)}`;
-    }
-  }
-  if (intro && intro.end > intro.start) url += `&intro=${intro.start}-${intro.end}`;
-  if (outro && outro.end > outro.start) url += `&outro=${outro.start}-${outro.end}`;
-  return url;
-}
 
 router.get("/watch/:slug/:ep", async (req, res) => {
   const origin_url = getBaseUrl(req);
