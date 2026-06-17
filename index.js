@@ -643,4 +643,14 @@ if (require.main === module) {
   );
 }
 
-module.exports = router;
+module.exports = (req, res) => {
+  router(req, res, (err) => {
+    if (err) {
+      res.statusCode = err.status || 500;
+      res.end(err.message);
+    } else if (!res.headersSent) {
+      res.statusCode = 404;
+      res.end();
+    }
+  });
+};
