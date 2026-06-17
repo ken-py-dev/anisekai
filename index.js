@@ -613,32 +613,31 @@ router.get("/watch/:slug/:ep", async (req, res) => {
   }
 });
 
-router.get("/player", async (req, res) => {
-  try {
-    const qs = new URLSearchParams(req.query).toString();
-    const dest = `https://www.ken-py-dev.gleeze.com/player?${qs}`;
-    const primaryAlive = await axios.get(dest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-    if (primaryAlive) return res.redirect(dest);
-    const fallbackDest = `https://allanime.day/player?${qs}`;
-    const fallbackAlive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-    if (fallbackAlive) return res.redirect(fallbackDest);
-    res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
-  } catch (err) {
-    try {
-      const qs = new URLSearchParams(req.query).toString();
-      const fallbackDest = `https://allanime.day/player?${qs}`;
-      const alive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
-      if (alive) return res.redirect(fallbackDest);
-    } catch {}
-    res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
-  }
-});
-
 const app = express();
 app.use("/", router);
 app.use(express.static(path.join(__dirname, "public")));
 
 if (require.main === module) {
+  router.get("/player", async (req, res) => {
+    try {
+      const qs = new URLSearchParams(req.query).toString();
+      const dest = `https://www.ken-py-dev.gleeze.com/player?${qs}`;
+      const primaryAlive = await axios.get(dest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
+      if (primaryAlive) return res.redirect(dest);
+      const fallbackDest = `https://allanime.day/player?${qs}`;
+      const fallbackAlive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
+      if (fallbackAlive) return res.redirect(fallbackDest);
+      res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
+    } catch (err) {
+      try {
+        const qs = new URLSearchParams(req.query).toString();
+        const fallbackDest = `https://allanime.day/player?${qs}`;
+        const alive = await axios.get(fallbackDest, { validateStatus: s => s < 400 }).then(() => true).catch(() => false);
+        if (alive) return res.redirect(fallbackDest);
+      } catch {}
+      res.status(404).json({ success: false, message: "Player is dead replace it with new one or your own player.html!" });
+    }
+  });
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () =>
     console.log(`ANISEKAI SCRAPER RUNNING ON PORT: ${PORT}\n== [ MAIN PAGE → GET/ ] ===\n=== [ API DOCUMENTATION → GET/docs ] ===`)
